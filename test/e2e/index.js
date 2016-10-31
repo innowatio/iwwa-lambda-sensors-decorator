@@ -6,7 +6,7 @@ import {v4} from "node-uuid";
 chai.use(sinonChai);
 
 import {handler} from "index";
-import {getMongoClient, findSensor} from "services/mongo-db";
+import {getMongoClient} from "services/mongo-db";
 import {getEventFromObject} from "../mocks";
 import {SENSORS_COLLECTION} from "config";
 
