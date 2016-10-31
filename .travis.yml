@@ -3,8 +3,8 @@ language: node_js
 node_js:
   - "5"
 
-#services:
-#  - your services (e.g. mongodb)
+services:
+ - mongodb
 
 #env:
 #  - YOUR_ENV_VAR=http://localhost:3000
