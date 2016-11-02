@@ -2,7 +2,7 @@ import log from "./services/logger";
 
 import {decorateSensor} from "./steps/decorate-sensor";
 
-export default function pipeline(event) {
+export default async function pipeline(event) {
 
     log.info(event, "event");
 
@@ -14,5 +14,5 @@ export default function pipeline(event) {
         return null;
     }
 
-    decorateSensor(rawReading.sensorId, rawReading.measurements);
+    await decorateSensor(rawReading.sensorId, rawReading.measurements);
 }
