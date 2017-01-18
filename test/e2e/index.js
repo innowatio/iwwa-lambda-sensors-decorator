@@ -10,7 +10,7 @@ import {getMongoClient} from "services/mongo-db";
 import {getEventFromObject} from "../mocks";
 import {SENSORS_COLLECTION} from "config";
 
-const reading = {
+const reading2 = {
     "sensorId": "IT001E00030554",
     "date": "2015-10-14T15:08:16.652Z",
     "source": "reading",
@@ -22,6 +22,17 @@ const reading = {
         "type": "reactiveEnergy",
         "value": 45.5,
         "unitOfMeasurement": "kVARh"
+    }]
+};
+
+const reading1 = {
+    "sensorId": "IT001E00030554",
+    "date": "2015-10-14T15:08:18.652Z",
+    "source": "reading",
+    "measurements": [{
+        "type": "activeEnergy",
+        "value": 59.5,
+        "unitOfMeasurement": "kWh"
     }]
 };
 
@@ -68,23 +79,34 @@ describe("Handle kinesis reading event", async () => {
 
     it("Decorate sensor", async () => {
 
-        const event = getEventFromObject({
+        const event1 = getEventFromObject({
             id: "eventId",
             data: {
-                element: reading,
+                element: reading1,
                 id: v4()
             },
             type: "element inserted in collection readings"
         });
 
-        await handler(event, context);
-        expect(context.succeed).to.have.been.calledOnce;
+        const event2 = getEventFromObject({
+            id: "eventId",
+            data: {
+                element: reading2,
+                id: v4()
+            },
+            type: "element inserted in collection readings"
+        });
+
+        await handler(event1, context);
+        await handler(event2, context);
+
+        expect(context.succeed).to.have.been.calledtwice;
 
         const sensors = await db.collection(SENSORS_COLLECTION).find({}).toArray();
         expect(sensors).to.not.be.empty;
 
         const sensor = await db.collection(SENSORS_COLLECTION).findOne(
-            {_id: reading.sensorId}
+            {_id: reading1.sensorId}
         );
         expect(sensor.measurementTypes).to.be.deep.equal(["activeEnergy", "reactiveEnergy"]);
     });

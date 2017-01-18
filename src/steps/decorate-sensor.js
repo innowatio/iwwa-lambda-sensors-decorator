@@ -1,11 +1,18 @@
 import log from "services/logger";
-import {upsertSensor} from "services/mongo-db";
+import R from "ramda";
+import {findSensor, upsertSensor} from "services/mongo-db";
 
 export async function decorateSensor(sensorId, measurements) {
-
-    const measurementTypes = measurements.map(measurement => {
+    var measurementTypes =[];
+    const measurementType = measurements.map(measurement => {
         return measurement.type;
     });
+    
+    const sensor = await findSensor(sensorId);
+
+    if (sensor) {
+        measurementTypes = sensor.measurementTypes || [];
+    }
 
     log.info({
         sensorId,
@@ -13,6 +20,6 @@ export async function decorateSensor(sensorId, measurements) {
     });
 
     await upsertSensor(sensorId, {
-        measurementTypes
+        measurementTypes: R.uniq(R.concat(measurementTypes, measurementType))
     });
 }

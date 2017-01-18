@@ -22,3 +22,10 @@ export async function upsertSensor(id, sensor) {
         {upsert: true}
     );
 }
+
+export async function findSensor(id) {
+    const db = await getMongoClient();
+    return await db.collection(SENSORS_COLLECTION).findOne({
+        _id: id
+    });
+}
